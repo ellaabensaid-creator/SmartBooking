@@ -1,21 +1,30 @@
 [build]
-  command = "cd frontend && npm install && npm run build"
+  command = "npm run build:all"
   publish = "frontend/dist"
+  functions = "netlify/functions"
 
-# Proxy API requests to your backend
+[build.environment]
+  NODE_VERSION = "20.10.0"
+
+# Backend API - proxy vers les serverless functions
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  to = "/.netlify/functions/server:splat"
   status = 200
+  force = false
 
-# Handle client-side routing - must be last rule
+# Frontend - handle client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Custom 404 page (optional - create a 404.html in frontend/dist)
-[[redirects]]
-  from = "/*"
-  to = "/404.html"
-  status = 404
+# Headers de sécurité
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
