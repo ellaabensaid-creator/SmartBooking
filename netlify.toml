@@ -1,6 +1,6 @@
 [build]
-  command = "npm install --no-audit --no-fund && cd frontend && npm ci && npm run build && cd ../backend && npm ci"
-  publish = "frontend/dist"
+  command = "npm install --no-audit --no-fund && cd backend && npm ci && cd ../frontend && npm ci && npm run build && cp -r dist ../dist"
+  publish = "dist"
   functions = "netlify/functions"
 
 [build.environment]
