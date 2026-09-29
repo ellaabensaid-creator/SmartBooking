@@ -1,30 +1,27 @@
 [build]
-  command = "cd frontend && npm install && npm run build && cp -r dist ../ && cd ../backend && npm install"
-  publish = "dist"
+  command = "npm install --no-audit --no-fund && cd frontend && npm ci && npm run build && cd ../backend && npm ci"
+  publish = "frontend/dist"
   functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20.10.0"
 
-# Backend API - proxy vers les serverless functions
+# Proxy API calls to the Express Netlify Function.
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/server:splat"
+  to = "/.netlify/functions/server/api/:splat"
   status = 200
-  force = false
+  force = true
 
-# Frontend - handle client-side routing
+# Support React Router routes on direct navigation.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Headers de sécurité
 [[headers]]
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
     X-Frame-Options = "SAMEORIGIN"
-    X-XSS-Protection = "1; mode=block"
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Referrer-Policy = "strict-origin-when-cross-origin"
